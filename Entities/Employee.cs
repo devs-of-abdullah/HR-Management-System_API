@@ -15,7 +15,7 @@ namespace Entities
         public Department Department { get; set; } = null!;
         public int RoleId { get; set; }
         public Role Role {get;set;} = null!;
-        public string Status { get; set; } = "Active";
+        public bool IsActive { get; set; } = true; 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }
 }
