@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces;
 using Entities;
+using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories
@@ -11,22 +12,40 @@ namespace Data.Repositories
         {
             _context = context;
         }
-        public async Task<List<Employee>> GetAllEmployeesAsync()
+        public async Task<List<ReadEmployeeDto>> GetAllEmployeesAsync()
         {
-            return await _context.Employees.Where(e => e.IsActive).ToListAsync();
+           var employee = await _context.Employees.Where(e => e.IsActive).ToListAsync();
+            var dtoEmploye = employee.Select(e => new ReadEmployeeDto
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName, 
+                Email = e.Email,
+                PhoneNumber = e.PhoneNumber,
+                HireDate = e.HireDate,
+                Salary = e.Salary,
+                DepartmentId = e.DepartmentId,
+                RoleId  = e.RoleId,
+
+            }).ToList();
+
+            return dtoEmploye;
+           
         }
         public async Task<Employee?> GetEmployeeByIdAsync(int id)
         {
           return  await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
            
         }
-        public async Task AddEmployeeAsync(Employee employee)
+        public async Task AddEmployeeAsync(Employee e)
         {
-            _context.Employees.Add(employee);
+           _context.Employees.Add(e);
+            await _context.SaveChangesAsync();
+           
         }
-        public async Task UpdateEmployeeAsync(Employee employee)
+        public async Task UpdateEmployeeAsync(Employee e)
         {
-            _context.Employees.Update(employee);
+            _context.Employees.Update(e);
             await _context.SaveChangesAsync();
         }
         public async Task ActiveEmployeeByIdAsync(int id)

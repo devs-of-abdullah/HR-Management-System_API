@@ -24,6 +24,9 @@ namespace Data
                 .HasOne(e => e.Role)
                 .WithMany(r => r.Employees)
                 .HasForeignKey(e => e.RoleId);
+
+            modelBuilder.Entity<Employee>().Property(e => e.Salary).HasPrecision(18,2);
+
         }
       
     }
