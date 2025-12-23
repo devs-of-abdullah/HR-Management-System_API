@@ -2,7 +2,6 @@
 using Data.Interfaces;
 using Entities;
 using Entities.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace Business.Services
 {

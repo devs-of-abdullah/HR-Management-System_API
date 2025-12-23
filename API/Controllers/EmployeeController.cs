@@ -12,39 +12,39 @@ namespace API.Controllers
         {
             _employeeService = employeeService;
         }
-        [HttpGet]
+        [HttpGet("getemployees")]
         public async Task <IActionResult> GetAll()
         {
             return Ok(await _employeeService.GetAllEmployeesAsync());
         }
-        [HttpGet("get/{id}")]
+        [HttpGet("getemployee/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var e = await _employeeService.GetEmployeeByIdAsync(id);
             return e == null ? NotFound() : Ok(e);  
 
         }
-        [HttpPost]
+        [HttpPost("createemployee")]
         public async Task<IActionResult> Create(CreateEmployeeDto dto) 
         {
          
             await _employeeService.AddEmployeeAsync(dto);
             return Ok(dto);
         }
-        [HttpPut("update/{id}")]
+        [HttpPut("updateemployee/{id}")]
         public async Task<IActionResult> Update(int id, EmployeeDto employee) 
         {
             if (id != employee.Id) return BadRequest();
             await _employeeService.UpdateEmployeeAsync(employee);
             return NoContent();
         }
-        [HttpPatch("active/{id}")]
+        [HttpPatch("activeemployee/{id}")]
         public async Task<IActionResult> Active(int id)
         {
             await _employeeService.ActiveEmployeeByIdAsync(id);
             return NoContent();
         }
-        [HttpPatch("inactive/{id}")]
+        [HttpPatch("inactiveemployee/{id}")]
         public async Task<IActionResult> InActive(int id)
         {
             await _employeeService.ActiveEmployeeByIdAsync(id);

@@ -34,9 +34,11 @@ namespace Data.Repositories
         }
         public async Task<Employee?> GetEmployeeByIdAsync(int id)
         {
-          return await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
-          
-          
+            var e = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+
+            if (e == null) return null;
+            
+            return e;
            
         }
         public async Task AddEmployeeAsync(Employee e)
@@ -65,6 +67,13 @@ namespace Data.Repositories
             if (e == null) return;
             if(!e.IsActive) return;
             e.IsActive = false;
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteEmployeeAsync(int id)
+        {
+            var e = _context.Employees.FirstOrDefault(e => e.Id == id);
+            if (e == null) return;
+            _context.Employees.Remove(e);
             await _context.SaveChangesAsync();
         }
 

@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-
+﻿
 namespace Entities
 {
     public class Employee

@@ -12,6 +12,6 @@ namespace Data.Interfaces
         Task InActiveEmployeeByIdAsync(int i);
          Task ActiveEmployeeByIdAsync(int i);
          Task UpdateEmployeeAsync(Employee e);
-
+          Task DeleteEmployeeAsync(int i);
     }
 }
