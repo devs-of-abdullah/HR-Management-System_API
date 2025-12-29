@@ -12,69 +12,75 @@ namespace Data.Repositories
         {
             _context = context;
         }
-        public async Task<List<EmployeeDto>> GetAllEmployeesAsync()
+        public async Task<List<EmployeeDto>> GetAllAsync()
         {
-           var employee = await _context.Employees.Where(e => e.IsActive).ToListAsync();
-            var dtoEmploye = employee.Select(e => new EmployeeDto
+            return await _context.Employees.Where(e => e.IsActive).Select(e => new EmployeeDto
             {
                 Id = e.Id,
                 FirstName = e.FirstName,
-                LastName = e.LastName, 
+                LastName = e.LastName,
                 Email = e.Email,
                 PhoneNumber = e.PhoneNumber,
                 HireDate = e.HireDate,
                 Salary = e.Salary,
                 DepartmentId = e.DepartmentId,
-                RoleId  = e.RoleId,
+                RoleId = e.RoleId,
 
-            }).ToList();
 
-            return dtoEmploye;
+            }).AsNoTracking().ToListAsync();
            
         }
-        public async Task<EmployeeEntity?> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeDto?> GetByIdAsync(int id)
         {
-            var e = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            return await _context.Employees.Where(e => e.Id == id).Select(e => new EmployeeDto
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                Email = e.Email,
+                PhoneNumber = e.PhoneNumber,
+                HireDate = e.HireDate,
+                Salary = e.Salary,
+                DepartmentId = e.DepartmentId,
+                RoleId = e.RoleId,
 
-            if (e == null) return null;
-            
-            return e;
+            }).FirstOrDefaultAsync();
+      
+        }
+
+        public async Task<EmployeeEntity?> GetEntityByIdAsync(int id)
+        {
+            return await _context.Employees.FirstOrDefaultAsync(e => e.Id ==  id);
+        }
+
+        public async Task AddAsync(EmployeeEntity employee)
+        {
+            await _context.Employees.AddAsync(employee);
+            await _context.SaveChangesAsync();
            
         }
-
-        public async Task AddEmployeeAsync(EmployeeEntity e)
+        public async Task UpdateAsync(EmployeeEntity employee)
         {
-           _context.Employees.Add(e);
+            _context.Employees.Update(employee);
             await _context.SaveChangesAsync();
+        }
+        public async Task SetActiveAsync(int id, bool isActive)
+        {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null) return;
            
-        }
-        public async Task UpdateEmployeeAsync(EmployeeEntity e)
-        {
-            _context.Employees.Update(e);
-            await _context.SaveChangesAsync();
-        }
-        public async Task ActiveEmployeeByIdAsync(int id)
-        {
-            var e = await _context.Employees.FirstOrDefaultAsync(x => x.Id == id);
-            if (e == null) return;
-            if(e.IsActive) return;
 
-            e.IsActive = true;
+            employee.IsActive = isActive;
             await _context.SaveChangesAsync();
         }
-        public async Task InActiveEmployeeByIdAsync(int id)
+     
+        public async Task DeleteAsync(int id)
         {
-         var e = await _context.Employees.FirstOrDefaultAsync(x => x.Id == id);
-            if (e == null) return;
-            if(!e.IsActive) return;
-            e.IsActive = false;
-            await _context.SaveChangesAsync();
-        }
-        public async Task DeleteEmployeeAsync(int id)
-        {
-            var e = _context.Employees.FirstOrDefault(e => e.Id == id);
-            if (e == null) return;
-            _context.Employees.Remove(e);
+            var employee = await _context.Employees.FindAsync(id);
+
+            if (employee == null) return;
+
+            _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
         }
 

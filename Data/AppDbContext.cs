@@ -59,6 +59,8 @@ namespace Data
                 entity.Property(r => r.Name).IsRequired().HasMaxLength(50);
                 entity.Property(r => r.Description).IsRequired().HasMaxLength(250);
 
+                entity.HasMany(d => d.Employees).WithOne(e => e.Role).HasForeignKey(e => e.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             });
 

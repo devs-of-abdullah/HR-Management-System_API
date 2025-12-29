@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 namespace API.Controllers
 {
     [ApiController]
@@ -12,45 +13,65 @@ namespace API.Controllers
         {
             _employeeService = employeeService;
         }
-        [HttpGet("getemployees")]
+
+        [Authorize]
+        [HttpGet]
         public async Task <IActionResult> GetAll()
         {
-            return Ok(await _employeeService.GetAllEmployeesAsync());
+            return Ok(await _employeeService.GetAllAsync());
         }
-        [HttpGet("getemployee/{id}")]
+
+        [Authorize]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var e = await _employeeService.GetEmployeeByIdAsync(id);
-            return e == null ? NotFound() : Ok(e);  
+            var employee = await _employeeService.GetByIdAsync(id);
+            return employee == null ? NotFound() : Ok(employee);  
 
         }
-        [HttpPost("createemployee")]
-        public async Task<IActionResult> Create(CreateEmployeeDto dto) 
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateEmployeeDto dto) 
         {
          
-            await _employeeService.AddEmployeeAsync(dto);
-            return Ok(dto);
+            await _employeeService.AddAsync(dto);
+            return StatusCode(201);
         }
-        [HttpPut("updateemployee/{id}")]
-        public async Task<IActionResult> Update(int id, EmployeeDto employee) 
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id,[FromBody] EmployeeDto employee) 
         {
             if (id != employee.Id) return BadRequest();
-            await _employeeService.UpdateEmployeeAsync(employee);
+
+            await _employeeService.UpdateAsync(employee);
             return NoContent();
         }
-        [HttpPatch("activeemployee/{id}")]
-        public async Task<IActionResult> Active(int id)
+        
+        [Authorize]
+        [HttpPatch("{id}/activate")]
+        public async Task<IActionResult> Activate(int id)
         {
-            await _employeeService.ActiveEmployeeByIdAsync(id);
-            return NoContent();
-        }
-        [HttpPatch("inactiveemployee/{id}")]
-        public async Task<IActionResult> InActive(int id)
-        {
-            await _employeeService.ActiveEmployeeByIdAsync(id);
+            await _employeeService.ActivateAsync(id);
             return NoContent();
         }
 
+        [Authorize]
+        [HttpPatch("{id}/deactivate")]
+        public async Task<IActionResult> InActive(int id)
+        {
+            await _employeeService.ActivateAsync(id);
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id) 
+        {
+            await _employeeService.DeleteAsync(id);
+            return NoContent();
+        }
 
     }
 }

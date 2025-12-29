@@ -12,15 +12,15 @@ namespace Business.Services
         {
             _repo = repo;
         }
-        public async Task<List<EmployeeDto>> GetAllEmployeesAsync()
+        public async Task<List<EmployeeDto>> GetAllAsync()
         {
-            return await _repo.GetAllEmployeesAsync();
+            return await _repo.GetAllAsync();        
         }
-        public async Task<EmployeeEntity?> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeDto?> GetByIdAsync(int id)
         {
-            return await _repo.GetEmployeeByIdAsync(id);
+            return await _repo.GetByIdAsync(id);
         }
-        public  async Task AddEmployeeAsync(CreateEmployeeDto dto)
+        public  async Task AddAsync(CreateEmployeeDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email))
                 throw new Exception("Email is required");
@@ -38,18 +38,14 @@ namespace Business.Services
                 Salary = dto.Salary,
                 DepartmentId = dto.DepartmentId,
                 RoleId = dto.RoleId,
-                IsActive = true,
-                CreatedDate = DateTime.UtcNow
             };
        
-            await _repo.AddEmployeeAsync(employee);
+            await _repo.AddAsync(employee);
 
 
         }
-        public async Task UpdateEmployeeAsync(EmployeeDto dto)
+        public async Task UpdateAsync(EmployeeDto dto)
         {
-            if (dto.Id <= 0)
-                throw new Exception("Invalid Employee ID");
 
             if (string.IsNullOrWhiteSpace(dto.Email))
                 throw new Exception("Email is required");
@@ -58,10 +54,9 @@ namespace Business.Services
             if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
                 throw new Exception("Phone Number is Required");
 
-            var employee = await _repo.GetEmployeeByIdAsync(dto.Id);
+            var employee = await _repo.GetEntityByIdAsync(dto.Id);
 
-            if (employee is null)
-                throw new Exception("Employe not found");
+            if (employee == null) return;
          
             employee.FirstName = dto.FirstName;
             employee.LastName = dto.LastName;
@@ -72,16 +67,20 @@ namespace Business.Services
             employee.DepartmentId = dto.DepartmentId;
             employee.RoleId = dto.RoleId;
 
-            await _repo.UpdateEmployeeAsync(employee);
+            await _repo.UpdateAsync(employee);
         }
-        public async Task ActiveEmployeeByIdAsync(int id)
+        public async Task ActivateAsync(int id)
         {
-           await _repo.ActiveEmployeeByIdAsync(id);
+           await _repo.SetActiveAsync(id,true);
 
         }
-        public async Task InActiveEmployeeByIdAsync(int id)
+        public async Task DeactivateAsync(int id)
         {
-           await _repo.InActiveEmployeeByIdAsync(id);
+           await _repo.SetActiveAsync(id,false);
+        }
+        public async Task DeleteAsync(int id) 
+        {
+            await _repo.DeleteAsync(id);
         }
     }
 }
