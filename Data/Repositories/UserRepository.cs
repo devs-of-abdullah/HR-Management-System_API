@@ -38,7 +38,6 @@ namespace Data
             };
             return foundUser;
         } 
-
         public async Task<bool> IsExistsById(int id)
         {
              return await _context.Users.AnyAsync(u => u.Id == id);  
@@ -48,10 +47,9 @@ namespace Data
         {
             return await _context.Users.AnyAsync(u =>u.Email == email);
         }
-
         public async Task Add(RegisterUserDto user) 
         {
-            var entity = new User
+            var entity = new UserEntity
             {
                 Email = user.Email,
                 Password = user.Password,

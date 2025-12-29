@@ -1,7 +1,7 @@
 ﻿
 namespace Entities
 {
-    public class Employee
+    public class EmployeeEntity
     {
         public int Id { get; set; }
         public string FirstName { get; set; } = null!;
@@ -11,9 +11,9 @@ namespace Entities
         public DateTime HireDate { get; set; } 
         public decimal Salary { get; set; }
         public int DepartmentId {  get; set; }
-        public Department Department { get; set; } = null!;
+        public DepartmentEntity Department { get; set; } = null!;
         public int RoleId { get; set; }
-        public Role Role {get;set;} = null!;
+        public RoleEntity Role {get;set;} = null!;
         public bool IsActive { get; set; } = true; 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }

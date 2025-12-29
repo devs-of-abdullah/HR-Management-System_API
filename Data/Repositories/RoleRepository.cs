@@ -14,7 +14,7 @@ namespace Data.Repositories
 
         public async Task CreateRole(CreateRoleDto roleDto)
         {
-            var role = new Role()
+            var role = new RoleEntity()
             {               
                 Name = roleDto.RoleName,
                 Description = roleDto.Description,
@@ -79,9 +79,9 @@ namespace Data.Repositories
         }
         public async Task AddEmployeeToRole(int roleId,int employeeId)
         {
-            Role? role = await _context.Roles.FirstOrDefaultAsync(i => i.Id == roleId);
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
             if (role == null) return;
-            Employee? employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
             if (employee == null) return;                
             role.Employees.Add(employee);
             await _context.SaveChangesAsync();
@@ -89,9 +89,9 @@ namespace Data.Repositories
         }
         public async Task RemoveEmployeeFromRole(int roleId, int employeeId)
         {
-            Role? role = await _context.Roles.FirstOrDefaultAsync(i => i.Id == roleId);
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId);
             if (role == null) return;
-            Employee? employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
             if (employee == null) return;
             role.Employees.Remove(employee);
             await _context.SaveChangesAsync();

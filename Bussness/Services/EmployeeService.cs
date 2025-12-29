@@ -16,7 +16,7 @@ namespace Business.Services
         {
             return await _repo.GetAllEmployeesAsync();
         }
-        public async Task<Employee?> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeEntity?> GetEmployeeByIdAsync(int id)
         {
             return await _repo.GetEmployeeByIdAsync(id);
         }
@@ -28,7 +28,7 @@ namespace Business.Services
             if (string.IsNullOrWhiteSpace(dto.PhoneNumber)) 
                 throw new Exception("Phone Number is Required");
 
-            var employee = new Employee
+            var employee = new EmployeeEntity
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,

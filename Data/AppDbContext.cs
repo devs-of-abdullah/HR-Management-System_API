@@ -9,15 +9,15 @@ namespace Data
         {
         }
 
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<EmployeeEntity> Employees { get; set; }
+        public DbSet<DepartmentEntity> Departments { get; set; }
+        public DbSet<RoleEntity> Roles { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Employee>(entity =>
+            modelBuilder.Entity<EmployeeEntity>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
@@ -37,7 +37,7 @@ namespace Data
                 entity.HasOne(e => e.Role).WithMany(r => r.Employees).HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Restrict);
 
             });
-            modelBuilder.Entity<Department>(entity =>
+            modelBuilder.Entity<DepartmentEntity>(entity =>
             {
                 entity.HasKey(d => d.Id);
 
@@ -46,7 +46,7 @@ namespace Data
 
 
 
-            }); modelBuilder.Entity<Role>(entity =>
+            }); modelBuilder.Entity<RoleEntity>(entity =>
             {
                 entity.HasKey(r => r.Id);
 
@@ -54,7 +54,7 @@ namespace Data
                 entity.Property(r => r.Description).IsRequired().HasMaxLength(250);
 
 
-            }); modelBuilder.Entity<User>(entity =>
+            }); modelBuilder.Entity<UserEntity>(entity =>
             {
                 entity.HasKey(u => u.Id);
 

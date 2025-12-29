@@ -18,7 +18,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string RoleName { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public List<RoleDto> Employees { get; set; } = null!;
+        public List<RoleDto> Employees { get; set; } = new List<RoleDto>();
 
     }
 }

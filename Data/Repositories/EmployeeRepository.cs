@@ -32,7 +32,7 @@ namespace Data.Repositories
             return dtoEmploye;
            
         }
-        public async Task<Employee?> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeEntity?> GetEmployeeByIdAsync(int id)
         {
             var e = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
 
@@ -42,13 +42,13 @@ namespace Data.Repositories
            
         }
 
-        public async Task AddEmployeeAsync(Employee e)
+        public async Task AddEmployeeAsync(EmployeeEntity e)
         {
            _context.Employees.Add(e);
             await _context.SaveChangesAsync();
            
         }
-        public async Task UpdateEmployeeAsync(Employee e)
+        public async Task UpdateEmployeeAsync(EmployeeEntity e)
         {
             _context.Employees.Update(e);
             await _context.SaveChangesAsync();
