@@ -1,24 +1,39 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations;
+
+
+
+
+
 namespace Entities.DTOs
 {
+
     public class CreateRoleDto
     {
-        public string RoleName { get; set; } = null!;
-        public string Description { get; set; } = null!;
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = null!;
+
+        [MaxLength(500)]
+        public string Description { get; set; } = string.Empty;
     }
     public class UpdateRoleDto
     {
-        public string RoleName { get; set; } = null!;
-        public string Description { get; set; } = null!;
-    }
+        [Required]
+        [MaxLength(100)]
+        public string Name { get; set; } = null!;
 
+        [MaxLength(500)]
+        public string Description { get; set; } = string.Empty;
+    }
     public class RoleDto
     {
         public int Id { get; set; }
-        public string RoleName { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public List<RoleDto> Employees { get; set; } = new List<RoleDto>();
+        public string Name { get; set; } = null!;
+        public string Description { get; set; } = string.Empty;
 
+        public List<EmployeeDto> Employees { get; set; } = new();
     }
+
 }

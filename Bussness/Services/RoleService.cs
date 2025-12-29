@@ -1,6 +1,8 @@
 ﻿
+
 using Business.Interfaces;
 using Data.Interfaces;
+using Entities;
 using Entities.DTOs;
 
 namespace Business.Services
@@ -10,43 +12,62 @@ namespace Business.Services
         readonly IRoleRepository _repo;
         public RoleService(IRoleRepository repo) { _repo = repo; }
 
-        public async Task<List<RoleDto>> GetAllRolesAsync()
+        public async Task<List<RoleDto>> GetAllAsync()
         {
-            return await _repo.GetAllRolesAsync();
-        }
-        public async Task<RoleDto?> GetRole(int id)
-        {
-            var r = await _repo.GetRole(id);
-            if (r == null) return null;
-            RoleDto roleDto = new RoleDto()
+            var roles = await _repo.GetAllAsync();
+
+            return roles.Select(d => new RoleDto
             {
-                RoleName = r.RoleName,
-                Description = r.Description,
-                Id = r.Id,
+                Id = d.Id,
+                Name = d.Name,
+                Description = d.Description
+
+            }).ToList();
+        }
+        public async Task<RoleDto?> GetByIdAsync(int id)
+        {
+            var role = await _repo.GetByIdAsync(id);
+
+            if (role == null) return null;
+
+            return new RoleDto
+            {
+                Id = role.Id,
+                Name = role.Name,
+                Description = role.Description
             };
-            return roleDto;
 
         }
-        public async Task CreateRole(CreateRoleDto dto)
+        public async Task<int> CreateAsync(CreateRoleDto dto)
         {
-           await _repo.CreateRole(dto);
-   
+            var entity = new RoleEntity
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+            };
+            return await _repo.CreateAsync(entity);
         }
-        public async Task UpdateRole(int Id, UpdateRoleDto dto)
+        public async Task UpdateAsync(int Id, UpdateRoleDto dto)
         {
-            await _repo.UpdateRole(Id, dto);
+            var role = await _repo.GetByIdAsync(Id)
+            ?? throw new KeyNotFoundException("role not found");
+
+            role.Name = dto.Name;
+            role.Description = dto.Description;
+
+            await _repo.UpdateAsync(role);
         }
-        public async Task DeleteRole(int id) 
+        public async Task DeleteAsync(int id)
         {
-            await _repo.DeleteRole(id);
+            await _repo.DeleteAsync(id);
         }
-        public async Task AddEmployeeToRole(int roleId, int employeeId)
+        public async Task AddEmployeeAsync(int roleId, int employeeId)
         {
-            await _repo.AddEmployeeToRole(roleId, employeeId);
+            await _repo.AddEmployeeAsync(roleId, employeeId);
         }
-        public async Task RemoveEmployeeFromRole(int roleId, int employeeId)
+        public async Task RemoveEmployeeAsync(int roleId, int employeeId)
         {
-            await _repo.RemoveEmployeeFromRole(roleId, employeeId);
+            await _repo.RemoveEmployeeAsync(roleId, employeeId);
         }
     }
 }

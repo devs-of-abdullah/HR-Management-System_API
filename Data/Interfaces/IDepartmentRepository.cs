@@ -1,7 +1,6 @@
 ﻿
 
 using Entities;
-using Entities.DTOs;
 
 namespace Data.Interfaces
 {

@@ -1,19 +1,17 @@
 ﻿
 
 using Entities;
-using Entities.DTOs;
 
 namespace Data.Interfaces
 {
     public interface IRoleRepository
     {
-        Task CreateRole(CreateRoleDto role);
-        Task DeleteRole(int id);
-        Task UpdateRole(int Id, UpdateRoleDto role);
-        Task<RoleDto?> GetRole(int id);
-        Task<List<RoleDto>> GetAllRolesAsync();
-        Task AddEmployeeToRole(int roleId, int employeeID);
-        Task RemoveEmployeeFromRole(int roleId, int employeeID);
+        Task<int> CreateAsync(RoleEntity role);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(RoleEntity role);
+        Task<RoleEntity?> GetByIdAsync(int id);
+        Task<List<RoleEntity>> GetAllAsync();
+        Task AddEmployeeAsync(int roleId, int employeeID);
+        Task RemoveEmployeeAsync(int roleId, int employeeID);
     }
 }
-

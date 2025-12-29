@@ -1,6 +1,7 @@
 ﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -13,13 +14,15 @@ namespace API.Controllers
         { 
             _service = service; 
         }
-
+        
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
           return Ok(await _service.GetAllAsync());
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentDto dto)
         {
@@ -29,7 +32,8 @@ namespace API.Controllers
              return CreatedAtAction(nameof(Get), new {id},dto);
 
         }
-
+     
+        [Authorize]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -37,13 +41,15 @@ namespace API.Controllers
             return department == null ? NotFound() : Ok(department);
         }
 
+        [Authorize]
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteDepartment(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
             return NoContent();
         }
-
+        
+        [Authorize]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateDepartmentDto dto)
         {
@@ -54,8 +60,9 @@ namespace API.Controllers
                   
         }
 
+        [Authorize]
         [HttpPost("{id:int}/employees{employeId:int}")]
-        public async Task<IActionResult> AddEmployeeToRole(int id, int employeId)
+        public async Task<IActionResult> AddEmployee(int id, int employeId)
         {
            
            await _service.AddEmployeeAsync(id, employeId);
@@ -64,8 +71,10 @@ namespace API.Controllers
             
             
         }
+
+        [Authorize]
         [HttpDelete("{id:int}/employees{employeId:int}")]
-        public async Task<IActionResult> RemoveEmployeeFromDepartment(int id, int employeId)
+        public async Task<IActionResult> RemoveEmployee(int id, int employeId)
         {
             await _service.RemoveEmployeeAsync(id,employeId);
             return NoContent();

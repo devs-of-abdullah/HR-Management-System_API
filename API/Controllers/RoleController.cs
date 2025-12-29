@@ -1,94 +1,83 @@
 ﻿using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/roles")]
-    public class RoleController: ControllerBase
+    public class RoleController : ControllerBase
     {
-        readonly IRoleService _roleService;
-        public RoleController(IRoleService roleService) { _roleService = roleService; }
+        readonly IRoleService _service;
+        public RoleController(IRoleService service)
+        {
+            _service = service;
+        }
 
-        [HttpGet("getroles")]
+        [Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _roleService.GetAllRolesAsync());
+            return Ok(await _service.GetAllAsync());
         }
 
-        [HttpPost("createrole")]
-        public async Task<IActionResult> CreateRole(CreateRoleDto dto)
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateRoleDto dto)
         {
-            try
-            {
-                await _roleService.CreateRole(dto);
-            }
-            catch (Exception ex) { return NotFound(ex.Message); }
 
-            return Ok(dto);
+            var id = await _service.CreateAsync(dto);
+
+            return CreatedAtAction(nameof(Get), new { id }, dto);
+
         }
 
-        [HttpGet("getrole/{id}")]
-        public async Task<IActionResult> GetRole(int id)
+        [Authorize]
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Get(int id)
         {
-            var role = await _roleService.GetRole(id);
-            if(role == null) return NotFound();
-            return Ok(role);
-        }
-        [HttpDelete("deleterole/{id}")]
-        public async Task<IActionResult> DeleteRole(int id)
-        {
-            try
-            {
-              await _roleService.DeleteRole(id);         
-            }
-            catch (Exception ex) 
-            {
-                return BadRequest(ex.Message);
-            }        
-                return Ok();
+            var role = await _service.GetByIdAsync(id);
+            return role == null ? NotFound() : Ok(role);
         }
 
-        [HttpPut("updaterole/{Id}")]
-        public async Task<IActionResult> UpdateRole(int Id,UpdateRoleDto dto)
+        [Authorize]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                await _roleService.UpdateRole(Id, dto);
-            }
-            catch (Exception ex) { 
-                return BadRequest(ex.Message);
-            }
-            return Ok(dto);
+            await _service.DeleteAsync(id);
+            return NoContent();
         }
 
-        [HttpPost("addemployeetorole/{id}/{employeId}")]
-        public async Task<IActionResult> AddEmployeeToRole(int id, int employeId) 
+        [Authorize]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateRoleDto dto)
         {
-            try
-            {
-                await _roleService.AddEmployeeToRole(id, employeId);
-            }
-            catch (Exception ex) 
-            {
-                return BadRequest(ex.Message); 
-            }
-            return Ok();
+
+            await _service.UpdateAsync(id, dto);
+
+            return NoContent();
+
         }
 
-        [HttpPost("removeemployeefromrole/{id}/{employeId}")]
-        public async Task<IActionResult> RemoveEmployeeFromRole(int id, int employeId)
+        [Authorize]
+        [HttpPost("{id:int}/employees{employeId:int}")]
+        public async Task<IActionResult> AddEmployee(int id, int employeId)
         {
-            try
-            {
-                await _roleService.RemoveEmployeeFromRole(id, employeId);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return Ok();
+
+            await _service.AddEmployeeAsync(id, employeId);
+
+            return NoContent();
+
+
+        }
+
+        [Authorize]
+        [HttpDelete("{id:int}/employees{employeId:int}")]
+        public async Task<IActionResult> RemoveEmployee(int id, int employeId)
+        {
+            await _service.RemoveEmployeeAsync(id, employeId);
+            return NoContent();
         }
     }
 }
