@@ -10,93 +10,55 @@ namespace Data.Repositories
         readonly AppDbContext _context;
         public DepartmentRepository(AppDbContext context) { _context = context; }
 
-        public async Task CreateDepartment(CreateDepartmentDto Dto)
+        public async Task<int> CreateAsync(DepartmentEntity department)
         {
-            var department = new DepartmentEntity()
-            {
-                Name = Dto.Name,
-                Description = Dto.Description,
-
-            };
-
             _context.Departments.Add(department);
             await _context.SaveChangesAsync();
+            return department.Id;
         }
-        public async Task DeleteDepartment(int id)
+        public async Task DeleteAsync(int id)
         {
-            var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id);
-            if (department== null) return;
+            var department = await _context.Departments.FindAsync(id) 
+                ?? throw new KeyNotFoundException("department not found");
 
             _context.Departments.Remove(department);
-
             await _context.SaveChangesAsync();
         }
-        public async Task<DepartmentDto?> GetDepartment(int id)
+        public async Task<DepartmentEntity?> GetByIdAsync(int id)
         {
-            var department = await _context.Roles.FirstOrDefaultAsync(d => d.Id == id);
-            if (department == null) return null;
-
-            var departmentDto = new DepartmentDto()
-            {
-                Id = id,
-                Name = department.Name,
-                Description = department.Description,
-
-            };
-            return departmentDto;
+            return await _context.Departments.Include(d => d.Employees).FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public async Task<List<DepartmentDto>> GetAllDepartmentsAsync()
+        public async Task<List<DepartmentEntity>> GetAllAsync()
         {
-            var departments = await _context.Departments.ToListAsync();
-
-            var departmentDto = departments.Select(d => new DepartmentDto
-            {
-                
-                Id = d.Id,
-                Name = d.Name,
-                Description = d.Description,
-
-
-            }).ToList();
-
-            return departmentDto;
+            return await _context.Departments.ToListAsync();
         }
-        public async Task UpdateDepartment(int Id, UpdateDepartmentDto dto)
+        public async Task UpdateAsync(DepartmentEntity department)
         {
-
-            var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == Id);
-            if (department == null) return;
-
-            department.Name = dto.Name;
-            department.Description = dto.Description;
-
-
-
-            _context.Departments.Update(department);
             await _context.SaveChangesAsync();
-
         }
-        public async Task AddEmployeeToDepartment(int departmentId, int employeeId)
+        public async Task AddEmployeeAsync(int departmentId, int employeeId)
         {
-            var  department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId);
-            if (department == null) return;
+            var department = await _context.Departments.Include(d => d.Employees)
+                  .FirstOrDefaultAsync(d => d.Id == departmentId)
+                  ?? throw new KeyNotFoundException("Department not found");
 
-            var  employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
-            if (employee == null) return;
+            var employee = await _context.Employees.FindAsync(employeeId)
+                ?? throw new KeyNotFoundException("Employee not found");
 
             department.Employees.Add(employee);
 
             await _context.SaveChangesAsync();
 
         }
-        public async Task RemoveEmployeeFromDepartment(int departmentId, int employeeId)
+        public async Task RemoveEmployeeAsync(int departmentId, int employeeId)
         {
-            var  department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId);
-            if (department == null) return;
+            var department = await _context.Departments.Include(d => d.Employees)
+                      .FirstOrDefaultAsync(d => d.Id == departmentId)
+                      ?? throw new KeyNotFoundException("Department not found");
 
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == employeeId);
-            if (employee == null) return;
+            var employee = await _context.Employees.FindAsync(employeeId)
+                ?? throw new KeyNotFoundException("Employee not found");
 
             department.Employees.Remove(employee);
 

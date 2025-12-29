@@ -37,16 +37,22 @@ namespace Data
                 entity.HasOne(e => e.Role).WithMany(r => r.Employees).HasForeignKey(e => e.RoleId).OnDelete(DeleteBehavior.Restrict);
 
             });
+
             modelBuilder.Entity<DepartmentEntity>(entity =>
             {
                 entity.HasKey(d => d.Id);
 
-                entity.Property(d => d.Name).IsRequired().HasMaxLength(50);
-                entity.Property(d => d.Description).IsRequired().HasMaxLength(250);
+                entity.Property(d => d.Name).IsRequired().HasMaxLength(100);
+
+                entity.Property(d => d.Description).IsRequired().HasMaxLength(500);
+
+                entity.HasMany(d => d.Employees).WithOne(e => e.Department).HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
-
-            }); modelBuilder.Entity<RoleEntity>(entity =>
+            });
+            
+            modelBuilder.Entity<RoleEntity>(entity =>
             {
                 entity.HasKey(r => r.Id);
 
@@ -54,7 +60,9 @@ namespace Data
                 entity.Property(r => r.Description).IsRequired().HasMaxLength(250);
 
 
-            }); modelBuilder.Entity<UserEntity>(entity =>
+            });
+
+            modelBuilder.Entity<UserEntity>(entity =>
             {
                 entity.HasKey(u => u.Id);
 

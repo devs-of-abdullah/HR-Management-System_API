@@ -1,17 +1,18 @@
 ﻿
 
+using Entities;
 using Entities.DTOs;
 
 namespace Data.Interfaces
 {
     public interface IDepartmentRepository
     {
-        Task CreateDepartment(CreateDepartmentDto department);
-        Task DeleteDepartment(int id);
-        Task UpdateDepartment(int Id, UpdateDepartmentDto department);
-        Task<DepartmentDto?> GetDepartment(int id);
-        Task<List<DepartmentDto>> GetAllDepartmentsAsync();
-        Task AddEmployeeToDepartment(int departmentId, int employeeID);
-        Task RemoveEmployeeFromDepartment(int departmentId, int employeeID);
+        Task<int> CreateAsync(DepartmentEntity department);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(DepartmentEntity department);
+        Task<DepartmentEntity?> GetByIdAsync(int id);
+        Task<List<DepartmentEntity>> GetAllAsync();
+        Task AddEmployeeAsync(int departmentId, int employeeID);
+        Task RemoveEmployeeAsync(int departmentId, int employeeID);
     }
 }

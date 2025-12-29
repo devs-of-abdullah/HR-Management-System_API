@@ -2,6 +2,7 @@
 
 using Business.Interfaces;
 using Data.Interfaces;
+using Entities;
 using Entities.DTOs;
 
 namespace Business.Services
@@ -11,45 +12,62 @@ namespace Business.Services
         readonly IDepartmentRepository _repo;
         public DepartmentService(IDepartmentRepository repo) { _repo = repo; }
 
-        public async Task<List<DepartmentDto>> GetAllDepartmentsAsync()
+        public async Task<List<DepartmentDto>> GetAllAsync()
         {
-            return await _repo.GetAllDepartmentsAsync();
-        }
-        public async Task<DepartmentDto?> GetDepartment(int id)
-        {
-            var d = await _repo.GetDepartment(id);
+            var departments = await _repo.GetAllAsync();
 
-            if (d == null) return null;
-
-            var Dto = new DepartmentDto()
+            return departments.Select(d => new DepartmentDto
             {
-                Name = d.Name,
-                Description = d.Description,
                 Id = d.Id,
+                Name = d.Name,
+                Description = d.Description
+
+            }).ToList();
+        }
+        public async Task<DepartmentDto?> GetByIdAsync(int id)
+        {
+            var department = await _repo.GetByIdAsync(id);
+
+            if (department == null) return null;
+
+            return new DepartmentDto
+            {
+                Id = department.Id,
+                Name = department.Name,
+                Description = department.Description
             };
-            return Dto;
 
         }
-        public async Task CreateDepartment(CreateDepartmentDto dto)
+        public async Task<int> CreateAsync(CreateDepartmentDto dto)
         {
-            await _repo.CreateDepartment(dto);
+            var entity = new DepartmentEntity
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+            };
+            return await _repo.CreateAsync(entity);
+        }
+        public async Task UpdateAsync(int Id, UpdateDepartmentDto dto)
+        {
+            var department = await _repo.GetByIdAsync(Id)
+            ?? throw new KeyNotFoundException("Department not found");
 
+            department.Name = dto.Name;
+            department.Description = dto.Description;
+
+            await _repo.UpdateAsync(department);
         }
-        public async Task UpdateDepartment(int Id, UpdateDepartmentDto dto)
+        public async Task DeleteAsync(int id)
         {
-            await _repo.UpdateDepartment(Id, dto);
+            await _repo.DeleteAsync(id);
         }
-        public async Task DeleteDepartment(int id)
+        public async Task AddEmployeeAsync(int departmentId, int employeeId)
         {
-            await _repo.DeleteDepartment(id);
+            await _repo.AddEmployeeAsync(departmentId, employeeId);
         }
-        public async Task AddEmployeeToDepartment(int departmentId, int employeeId)
+        public async Task RemoveEmployeeAsync(int departmentId, int employeeId)
         {
-            await _repo.AddEmployeeToDepartment(departmentId, employeeId);
-        }
-        public async Task RemoveEmployeeFromDepartment(int departmentId, int employeeId)
-        {
-            await _repo.RemoveEmployeeFromDepartment(departmentId, employeeId);
+            await _repo.RemoveEmployeeAsync(departmentId, employeeId);
         }
     }
 }
