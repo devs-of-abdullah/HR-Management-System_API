@@ -1,6 +1,4 @@
-﻿
-
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Entities;
 using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
