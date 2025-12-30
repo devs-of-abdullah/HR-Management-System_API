@@ -2,6 +2,7 @@
 using Entities.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API
 {
@@ -19,8 +20,8 @@ namespace API
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
         {
-             await _userService.RegisterAsync(dto.Email, dto.Password);
-             return StatusCode(201,"User registered succesfully");
+             int Id = await _userService.RegisterAsync(dto.Email, dto.Password);
+             return StatusCode(201,$"User registered succesfully with ID: {Id}");
         }
 
         [HttpPost("login")]
@@ -38,11 +39,43 @@ namespace API
         {
             return Ok(new
             {
-                UserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
-                Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                Email = User.FindFirst(ClaimTypes.Email)?.Value
+
             });
         }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _userService.GetAllAsync());
+        }
 
+        [Authorize]
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var user = _userService.GetByIdAsync(id);
+            return user == null ? NotFound() : Ok(user);
+
+        }
+
+        [Authorize]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _userService.DeleteAsync(id);
+            return NoContent();
+
+        }
+
+        [Authorize]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
+        {
+            await _userService.UpdateAsync(id, dto);
+            return NoContent();
+        }
 
     }
 }

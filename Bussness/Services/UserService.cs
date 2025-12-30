@@ -1,7 +1,7 @@
-﻿using Data;
-using Entities.DTOs;
-using Business.Utils;
+﻿using Business.Utils;
+using Data;
 using Entities;
+using Entities.DTOs;
 namespace Business
 {
     public class UserService : IUserService
@@ -14,7 +14,7 @@ namespace Business
             _tokenService = token;
         }
 
-        public async Task RegisterAsync(string email, string password)
+        public async Task<int> RegisterAsync(string email, string password)
         {
             if (await _repo.ExistsByEmailAsync(email))
                 throw new InvalidOperationException("User already exists");
@@ -26,6 +26,8 @@ namespace Business
             };
 
              await _repo.AddAsync(user);
+
+            return user.Id;
 
             
         }
@@ -41,8 +43,56 @@ namespace Business
             return _tokenService.CreateToken(user);
 
         }
-       
+
+        public async Task<List<UserDto>> GetAllAsync()
+        {
+            var users = await _repo.GetAllAsync();
+
+            return users.Select(u => new UserDto
+            {
+                Id = u.Id,
+                Email = u.Email,
+            }).ToList();
+        }
+
+        public async Task<UserDto?> GetByIdAsync(int id)
+        {
+            var user = await _repo.GetByIdAsync(id);
+            if (user == null) return null;
+
+
+            return new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+            };
+        }
+        public async Task<UserDto?> GetByEmailAsync(string email)
+        {
+            var user = await _repo.GetByEmailAsync(email);
+            if (user == null) return null;
+
+            return new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+            };
+        }
+        public async Task DeleteAsync(int Id)
+        {
+            await _repo.DeleteAsync(Id);
+        }
+        public async Task UpdateAsync(int Id, UpdateUserDto dto)
+        {
+            var user = await _repo.GetByIdAsync(Id)
+                ?? throw new KeyNotFoundException("User not found");
+
+            user.Email = dto.Email;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            await _repo.UpdateAsync(user);
+        }
 
     }
-    
+
 }
