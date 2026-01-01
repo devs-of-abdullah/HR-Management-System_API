@@ -32,3 +32,5 @@
 2) Configure a SQL server connection string in app.settings
 3) Run Database Migrations
 - For initial create (dotnet ef migrations add InitialCreate --project Data --startup-project API)
+- To update (dotnet ef database update --project Data --startup-project API)
+4) Start the Blazor Client
