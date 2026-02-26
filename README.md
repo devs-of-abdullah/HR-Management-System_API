@@ -163,8 +163,3 @@ Two levels of access control are used:
 <PackageReference Include="Swashbuckle.AspNetCore" />
 ```
 
-
-
-## 📝 License
-
-MIT
