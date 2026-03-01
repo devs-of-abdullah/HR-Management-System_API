@@ -6,7 +6,7 @@ namespace Business.Interfaces
     {
         Task<List<ReadEmployeeDto>> GetAllAsync();
         Task<ReadEmployeeDto?> GetByIdAsync(int id);
-        Task AddAsync(CreateEmployeeDto dto);
+        Task<ReadEmployeeDto> AddAsync(CreateEmployeeDto dto);
         Task UpdateAsync(int id, UpdateEmployeeDto dto);
         Task ActivateAsync(int id);
         Task DeactivateAsync(int id);

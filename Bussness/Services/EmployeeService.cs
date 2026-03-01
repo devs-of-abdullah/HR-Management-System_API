@@ -24,7 +24,7 @@ namespace Business.Services
             return MapToDto(employee);
         }
 
-        public async Task AddAsync(CreateEmployeeDto dto)
+        public async Task<ReadEmployeeDto> AddAsync(CreateEmployeeDto dto)
         {
             var employee = new EmployeeEntity
             {
@@ -39,6 +39,20 @@ namespace Business.Services
             };
 
             await _repo.AddAsync(employee);
+
+            return new ReadEmployeeDto
+            {
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+                PhoneNumber = employee.PhoneNumber,
+                HireDate = employee.HireDate,
+                Salary = employee.Salary,
+                IsActive = employee.IsActive,
+                Department = employee.Department,
+                Role = employee.Role
+            };
         }
 
         public async Task UpdateAsync(int id, UpdateEmployeeDto dto)
