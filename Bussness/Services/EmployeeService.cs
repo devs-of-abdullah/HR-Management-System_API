@@ -1,31 +1,32 @@
 ﻿using Business.Interfaces;
 using Data.Interfaces;
+using Entities;
+using DTO.Employee;
 
 namespace Business.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        readonly IEmployeeRepository _repo;
+        private readonly IEmployeeRepository _repo;
+
         public EmployeeService(IEmployeeRepository repo) { _repo = repo; }
 
-        public async Task<List<DTO.Employee.ReadEmployeeDto>> GetAllAsync()
+        public async Task<List<ReadEmployeeDto>> GetAllAsync()
         {
             var employees = await _repo.GetAllAsync();
-
-            return employees.Select(e => MapToDto(e)).ToList();
+            return employees.Select(MapToDto).ToList();
         }
 
-        public async Task<DTO.Employee.ReadEmployeeDto?> GetByIdAsync(int id)
+        public async Task<ReadEmployeeDto?> GetByIdAsync(int id)
         {
             var employee = await _repo.GetByIdAsync(id);
-
             if (employee == null) return null;
             return MapToDto(employee);
         }
 
-        public async Task AddAsync(DTO.Employee.CreateEmployeeDto dto)
+        public async Task AddAsync(CreateEmployeeDto dto)
         {
-            var employee = new Entities.EmployeeEntity
+            var employee = new EmployeeEntity
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -33,38 +34,14 @@ namespace Business.Services
                 PhoneNumber = dto.PhoneNumber,
                 HireDate = dto.HireDate,
                 Salary = dto.Salary,
+                Department = dto.Department,
+                Role = dto.Role
             };
 
             await _repo.AddAsync(employee);
-
-            if (dto.DepartmentIDs != null)
-            {
-                foreach (var deptId in dto.DepartmentIDs)
-                {
-                    employee.EmployeeDepartments.Add(new Entities.EmployeeDepartmentEntity
-                    {
-                        EmployeeId = employee.Id,
-                        DepartmentId = deptId
-                    });
-                }
-                await _repo.UpdateAsync(employee);
-            }
-
-            if (dto.RoleIDs != null)
-            {
-                foreach (var roleId in dto.RoleIDs)
-                {
-                    employee.EmployeeRoles.Add(new Entities.EmployeeRoleEntity
-                    {
-                        EmployeeId = employee.Id,
-                        RoleId = roleId
-                    });
-                }
-                await _repo.UpdateAsync(employee);
-            }
         }
 
-        public async Task UpdateAsync(int id, DTO.Employee.UpdateEmployeeDto dto)
+        public async Task UpdateAsync(int id, UpdateEmployeeDto dto)
         {
             var employee = await _repo.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Employee not found");
@@ -73,18 +50,38 @@ namespace Business.Services
             if (dto.LastName != null) employee.LastName = dto.LastName;
             if (dto.PhoneNumber != null) employee.PhoneNumber = dto.PhoneNumber;
             if (dto.Salary.HasValue) employee.Salary = dto.Salary.Value;
+            if (dto.Department != null) employee.Department = dto.Department;
+            if (dto.Role != null) employee.Role = dto.Role;
 
             await _repo.UpdateAsync(employee);
         }
 
-        public async Task ActivateAsync(int id) => await _repo.SetActiveAsync(id, true);
+        public async Task ActivateAsync(int id)
+        {
+            _ = await _repo.GetByIdAsync(id)
+                ?? throw new KeyNotFoundException("Employee not found");
 
-        public async Task DeactivateAsync(int id) => await _repo.SetActiveAsync(id, false);
+            await _repo.SetActiveAsync(id, true);
+        }
 
-        public async Task DeleteAsync(int id) => await _repo.DeleteAsync(id);
+        public async Task DeactivateAsync(int id)
+        {
+            _ = await _repo.GetByIdAsync(id)
+                ?? throw new KeyNotFoundException("Employee not found");
 
-        static DTO.Employee.ReadEmployeeDto MapToDto(Entities.EmployeeEntity e) =>
-            new DTO.Employee.ReadEmployeeDto
+            await _repo.SetActiveAsync(id, false);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            _ = await _repo.GetByIdAsync(id)
+                ?? throw new KeyNotFoundException("Employee not found");
+
+            await _repo.DeleteAsync(id);
+        }
+
+        static ReadEmployeeDto MapToDto(EmployeeEntity e) =>
+            new ReadEmployeeDto
             {
                 Id = e.Id,
                 FirstName = e.FirstName,
@@ -94,9 +91,8 @@ namespace Business.Services
                 HireDate = e.HireDate,
                 Salary = e.Salary,
                 IsActive = e.IsActive,
-                DepartmentIDs = e.EmployeeDepartments.Select(ed => ed.DepartmentId).ToArray(),
-                RoleIDs = e.EmployeeRoles.Select(er => er.RoleId).ToArray()
+                Department = e.Department,
+                Role = e.Role
             };
     }
-
 }

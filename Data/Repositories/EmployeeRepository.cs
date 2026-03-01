@@ -12,16 +12,12 @@ namespace Data.Repositories
         public async Task<List<EmployeeEntity>> GetAllAsync()
         {
             return await _context.Employees
-                .Include(e => e.EmployeeDepartments)
-                .Include(e => e.EmployeeRoles)
                 .ToListAsync();
         }
 
         public async Task<EmployeeEntity?> GetByIdAsync(int id)
         {
             return await _context.Employees
-                .Include(e => e.EmployeeDepartments)
-                .Include(e => e.EmployeeRoles)
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 

@@ -21,15 +21,11 @@ public static class ServiceExtensions
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-        services.AddScoped<IRoleRepository, RoleRepository>();
-
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
-        services.AddScoped<IDepartmentService, DepartmentService>();
-        services.AddScoped<IRoleService, RoleService>();
+      
 
         services.AddControllers()
             .AddJsonOptions(x =>
